@@ -1,0 +1,21 @@
+{
+    "name": "hiecor/paymentmethod",
+    "description": "Hiecor Payment integration for Magento",
+    "type": "magento2-module",
+    "version": "1.0.0",
+    "autoload": {
+        "files": [ "registration.php" ],
+        "psr-4": {
+            "Hiecor\\PaymentMethod\\": ""
+        }
+    },
+    "authors": [
+    {
+      "name": "Hiecor Payment Gateway",
+      "email": "hiecor@gmail.com",
+      "homepage": "https://hiecor.com/",
+      "role": "Leader"
+    }
+  ]    
+    
+}

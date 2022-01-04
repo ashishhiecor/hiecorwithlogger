@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Backend:etc/menu.xsd">
+       <menu>
+           <add id="Hiecor_PaymentMethod::hiecorlogs"
+               title="HieCOR Logs" module="Hiecor_PaymentMethod"
+               sortOrder="50"
+               translate="title"
+               dependsOnModule="Hiecor_PaymentMethod"
+               parent="Magento_Reports::report"
+               resource="Hiecor_PaymentMethod::hiecorlogs"
+               />
+            <add id="Hiecor_PaymentMethod::hiecorlogs_logs"
+                 title="Log Viewer"
+                 translate="title"
+                 module="Hiecor_PaymentMethod"
+                 sortOrder="10"
+                 action="paymentmethod/create/index"
+                 parent="Hiecor_PaymentMethod::hiecorlogs"
+                 dependsOnModule="Hiecor_PaymentMethod"
+                 resource="Hiecor_PaymentMethod::hiecorlogs" />
+       </menu>
+</config>
