@@ -49,15 +49,17 @@ class ProductSave implements ObserverInterface
 	        $price    = 	$product->getPrice();
 	        $stocks   =     $product->getStockData();
 	        $images   = 	$this->helper->getProductImages($magentoPId);
-		$attrCodeValue = $product->getData('hiecor_product_id');
-		$unlimited_stock = ($stocks['manage_stock'] == 1) ? 0 : 1;
-		$qty      =    (($stocks['manage_stock'] == 1) && !empty($stocks['qty'])) ? $stocks['qty'] : 0;
+
+			$attrCodeValue = $product->getData('hiecor_product_id');
+			$unlimited_stock = ($stocks['manage_stock'] == 1) ? 0 : 1;
+			$qty      =    (($stocks['manage_stock'] == 1) && !empty($stocks['qty'])) ? $stocks['qty'] : 0;
 
 
 			$objectManager = \Magento\Framework\App\ObjectManager::getInstance();
 			$products = $objectManager->get('Magento\Framework\Registry')->registry('current_product');
 			$categories = $products->getCategoryIds(); /*will return category ids array*/
 			$categoryName = array();
+
 			foreach($categories as $category){
 			    $cat = $objectManager->create('Magento\Catalog\Model\Category')->load($category);
 			    $categoryName[] = $cat->getName();
@@ -128,7 +130,6 @@ class ProductSave implements ObserverInterface
 			        	$hiecorPId = $response['data'][0]['product_id'];
 			        	$this->logger->critical('ProductSave response postApiCall '.$magentoPId, ['responseData' => $response]);
 					}
-
 
 			        //create mapping in magento table
 			        if(!empty($hiecorPId)){

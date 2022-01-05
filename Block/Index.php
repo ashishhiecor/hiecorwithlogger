@@ -56,7 +56,7 @@ class Index extends \Magento\Backend\Block\Widget\Container
                 }
                 $this->driver->fileClose($handle);
             }
-            return nl2br($contents);
+            return nl2br(nl2br($contents));
         } catch (\Exception $e) {
             return $e->getMessage() . $pathLogfile;
         }

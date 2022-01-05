@@ -40,10 +40,10 @@ class SalesOrder implements ObserverInterface
             $order = $observer->getEvent()->getOrder();
 			$order_id = $order->getIncrementId();
 
-	     //Get & Unset Session
-             $ccSession = $objectManager->create('Magento\Customer\Model\Session');
-             $ccData    = $ccSession->getCcData();
-             $ccSession->unsCcData();
+            //Get & Unset Session
+            $ccSession = $objectManager->create('Magento\Customer\Model\Session');
+            $ccData    = $ccSession->getCcData();
+            $ccSession->unsCcData();
 			
             //fetch whole payment information
 			$payment = $order->getPayment()->getData();
@@ -91,7 +91,7 @@ class SalesOrder implements ObserverInterface
                                             'man_price' => $product->getPrice(), 
                                             'tax_exempt' => false, 
                                             'product_id' => $hiecorPId,
-                                            'qty' =>$product->getQtyOrdered() , 
+                                            'qty' =>$product->getQtyOrdered(), 
                                             'is_subscription' => false
                                         );
                 }

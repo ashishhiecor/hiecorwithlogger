@@ -45,19 +45,24 @@ class CheckoutProductSave implements ObserverInterface
             $orderId = $order->getIncrementId();
             $order = $objectManager->create('Magento\Sales\Model\Order')->load($orderId);
             $orderItems = $order->getAllVisibleItems();
+
             foreach ($orderItems as $key => $product) {
                 $magentoPId    =  $product->getProductId();
                 $productRepo      =  $objectManager->get('Magento\Catalog\Model\Product')->load($magentoPId);
                 $storeId       =  $product->getStoreId();
                 $attrCodeValue = $productRepo->getData('hiecor_product_id');
-                $StockState    = $objectManager->get('\Magento\InventorySalesAdminUi\Model\GetSalableQuantityDataBySku');
-                $qty           = $StockState->execute($product->getSku());
-                $unlimited_stock = ($qty[0]['manage_stock'] == 1) ? 0 : 1;
-                $stocks      =    (($qty[0]['manage_stock'] == 1) && !empty($qty[0]['qty'])) ? $qty[0]['qty'] : 0;
                 $sku           = $product->getSku();
+
+                $manageStock    = $objectManager->get('\Magento\InventorySalesAdminUi\Model\GetSalableQuantityDataBySku');
+                $qty           = $manageStock->execute($sku);
+                $unlimited_stock = (isset($qty[0]['manage_stock']) && $qty[0]['manage_stock'] == 1) ? 0 : 1;
+                $stocks      =    (($unlimited_stock == 0) && !empty($qty[0]['qty'])) ? $qty[0]['qty'] : 0;
+
+                $orderedQty = $product->getQtyOrdered();
 
                 $categories =   $productRepo->getCategoryIds(); /*will return category ids array*/
                 $categoryName = array();
+
                 foreach($categories as $category){
                   $cat = $objectManager->create('Magento\Catalog\Model\Category')->load($category);
                   $categoryName[] = $cat->getName();
@@ -66,7 +71,7 @@ class CheckoutProductSave implements ObserverInterface
                 $product_details = array(
                    'title'        => $product->getName(),
                    'price'        => $product->getPrice(),
-                   'stock'        =>  $stocks,
+                   'stock'        =>  $stocks+$orderedQty,
                    "type"          =>"straight",
                    "long_description"=>"",
                    "short_description"=>"",
@@ -92,20 +97,9 @@ class CheckoutProductSave implements ObserverInterface
                 );
 
                 // Insert & update product in hiecor
-                $this->logger->critical('attrCodeValue request '.$magentoPId, ['attrCodeValue' => $attrCodeValue]);
                 $this->logger->critical('CheckoutProductSave request '.$magentoPId, ['requestData' => $product_details]);
 
-                if(!empty($attrCodeValue)){
-                    $product_details['product_id'] = $attrCodeValue;
-                    $endPoint='rest/v1/product/update-product/';
-                    $response = $this->helper->postApiCall($product_details,$endPoint);
-                    $this->logger->critical('CheckoutProductSave response postApiCall '.$magentoPId, ['responseData' => $product_details]);
-
-                    if( empty($response['success']) && is_null($response['data']) && !empty($response['error']) ) {
-                      $message = 'Invalid Credentials in Hiecor Payment Method. '.$response['error']; 
-                      $this->logger->critical('Error CheckoutProductSave', ['message' => $message]);
-                    }
-                }else{
+                if(empty($attrCodeValue)){
                     // Check in Product lookup by product code product exist or not in hiecor
                     $urlSKU = str_replace(' ', '%20', $sku);
                     $endPoint='rest/v1/product/search/?product_code='.$urlSKU;

@@ -7,7 +7,7 @@
                 <title>HieCOR Payment Method</title>
                 <model>Hiecor\PaymentMethod\Model\Payment</model>
                 <active>1</active>
-                <cctypes>AE,VI,MC,DI</cctypes>
+                <cctypes>AE,VI,MC,DI,SS</cctypes>
             </hiecor_paymentmethod>
         </payment>
     </default>
