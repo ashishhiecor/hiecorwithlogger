@@ -183,13 +183,13 @@ class SalesOrder implements ObserverInterface
                     $order->setState($orderState)->setStatus(\Magento\Sales\Model\Order::STATE_COMPLETE);
                     $order->save();
                 }else{
-                    $this->logger->critical('Error SalesOrder '.$order_id, ['message' => $response['error']]);
+                    $this->logger->critical('Error SalesOrder response '.$order_id, ['responseData' => $response]);
 
                     $orderState = \Magento\Sales\Model\Order::STATE_PROCESSING;
                     $order->setState($orderState)->setStatus(\Magento\Sales\Model\Order::STATE_PROCESSING);
                     $order->save();
                 }
-    			$this->logger->critical('SalesOrder response '.$order_id, ['responseData' => $response]);
+    			
             }
 			
 		}catch(\Exception $e){
