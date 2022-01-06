@@ -1,7 +1,7 @@
 magento2-Hiecor-PaymentMethod
 =============================
 
-Hiecor payment gateway Magento2 extension
+Hiecor payment gateway Magento2 extension &
 Hiecor logger
 
 
