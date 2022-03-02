@@ -28,9 +28,6 @@
                 <field id="hiecor_source" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Source</label>
                 </field>
-                <field id="merchant_key" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
-                    <label>Merchant Key</label>
-                </field>
                 <field id="cctypes" translate="label" type="multiselect" sortOrder="65" showInDefault="1" showInWebsite="1" showInStore="0">
                     <label>Credit Card Types</label>
                     <source_model>Magento\Payment\Model\Source\Cctype</source_model>
