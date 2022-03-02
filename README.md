@@ -13,7 +13,7 @@ Install
 2. Enter following commands to install module:
 
     ```bash
-    composer config repositories.Hiecor git "https://github.com/ashishhiecor/hiecorwithlogger.git"
+    composer config repositories.hiecorwithlogger git "https://github.com/ashishhiecor/hiecorwithlogger.git"
     composer require hiecor/paymentmethod:dev-master
     ```
    Wait while dependencies are updated.
