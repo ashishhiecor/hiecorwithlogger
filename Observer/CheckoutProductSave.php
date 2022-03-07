@@ -111,7 +111,7 @@ class CheckoutProductSave implements ObserverInterface
                       $message = 'This product cannot be synced to Hiecor.More then one product have same SKU : '.$sku; 
                       $this->logger->critical('Error CheckoutProductSave', ['message' => $message]);
 
-                    }elseif( empty($hiecorProduct['success']) && is_null($hiecorProduct['data']) && !empty($hiecorProduct['error']) ) {
+                    }elseif( $hiecorProduct['success']== false && is_null($hiecorProduct['data']) && !empty($hiecorProduct['error']) ) {
                       $message = 'Invalid Credentials in Hiecor Payment Method. '.$hiecorProduct['error']; 
                       $this->logger->critical('Error CheckoutProductSave', ['message' => $message]);
                     
