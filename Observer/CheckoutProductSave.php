@@ -50,7 +50,7 @@ class CheckoutProductSave implements ObserverInterface
                 $magentoPId    =  $product->getProductId();
                 $productRepo      =  $objectManager->get('Magento\Catalog\Model\Product')->load($magentoPId);
                 $storeId       =  $product->getStoreId();
-                $attrCodeValue = $productRepo->getData('hiecor_product_id');
+                $hiecorProductId = $productRepo->getData('hiecor_product_id');
                 $sku           = $product->getSku();
 
                 $manageStock    = $objectManager->get('\Magento\InventorySalesAdminUi\Model\GetSalableQuantityDataBySku');
@@ -92,14 +92,14 @@ class CheckoutProductSave implements ObserverInterface
                    "sub_days_between"=>"",
                    "sub_lifetime"=>"",
                    "hide_from_pos"=>"0",
-                   "hide_from_web"=>"0",
+                   "hide_from_web"=>"1",
                    "images"=>$this->helper->getProductImages($magentoPId)
                 );
 
                 // Insert & update product in hiecor
                 $this->logger->critical('CheckoutProductSave request '.$magentoPId, ['requestData' => $product_details]);
 
-                if(empty($attrCodeValue)){
+                if(empty($hiecorProductId)){
                     // Check in Product lookup by product code product exist or not in hiecor
                     $urlSKU = str_replace(' ', '%20', $sku);
                     $endPoint='rest/v1/product/search/?product_code='.$urlSKU;
@@ -107,7 +107,7 @@ class CheckoutProductSave implements ObserverInterface
                     $this->logger->critical('CheckoutProductSave response getApiCall '.$magentoPId, ['responseData' => $hiecorProduct]);
 
                     if( !empty($hiecorProduct['success']) && !empty($hiecorProduct['data']) ){
-                      $hiecorPId = $hiecorProduct['data'][0]['product_id'];
+                      $hiecorPId = !empty($hiecorProduct['data'][0]['product_id']) ? $hiecorProduct['data'][0]['product_id'] : '';
                       $message = 'This product cannot be synced to Hiecor.More then one product have same SKU : '.$sku; 
                       $this->logger->critical('Error CheckoutProductSave', ['message' => $message]);
 
@@ -118,7 +118,7 @@ class CheckoutProductSave implements ObserverInterface
                     }else{
                       $endPoint='rest/v1/product/create-product/';
                       $response = $this->helper->postApiCall($product_details,$endPoint);
-                      $hiecorPId = $response['data'][0]['product_id'];
+                      $hiecorPId = !empty($response['data'][0]['product_id']) ? $response['data'][0]['product_id'] : '';
                       $this->logger->critical('CheckoutProductSave response postApiCall '.$magentoPId, ['responseData' => $response]);
                     }
 
