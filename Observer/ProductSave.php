@@ -117,7 +117,7 @@ class ProductSave implements ObserverInterface
 					$this->logger->critical('ProductSave response getApiCall '.$magentoPId, ['responseData' => $hiecorProduct]);
 
 					if( !empty($hiecorProduct['success']) && !empty($hiecorProduct['data']) ){
-						$hiecorPId = $hiecorProduct['data'][0]['product_id'];
+						$hiecorPId = !empty($hiecorProduct['data'][0]['product_id']) ? $hiecorProduct['data'][0]['product_id'] : '';
 						$errorMsg = "This product cannot be synced to Hiecor.More then one product have same SKU : $sku";
 						$message = __($errorMsg); 
 						$this->messageManager->addErrorMessage($message);
@@ -132,7 +132,7 @@ class ProductSave implements ObserverInterface
 					}else{
 			            $endPoint='rest/v1/product/create-product/';
 			        	$response = $this->helper->postApiCall($product_details,$endPoint);
-			        	$hiecorPId = $response['data'][0]['product_id'];
+			        	$hiecorPId = !empty($response['data'][0]['product_id']) ? $response['data'][0]['product_id'] : '';
 			        	$this->logger->critical('ProductSave response postApiCall '.$magentoPId, ['responseData' => $response]);
 					}
 
