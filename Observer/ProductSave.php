@@ -50,7 +50,7 @@ class ProductSave implements ObserverInterface
 	        $stocks   =     $product->getStockData();
 	        $images   = 	$this->helper->getProductImages($magentoPId);
 
-			$attrCodeValue = $product->getData('hiecor_product_id');
+			$hiecorProductId = $product->getData('hiecor_product_id');
 			$unlimited_stock = ($stocks['manage_stock'] == 1) ? 0 : 1;
 			$qty      =    (($stocks['manage_stock'] == 1) && !empty($stocks['qty'])) ? $stocks['qty'] : 0;
 
@@ -89,15 +89,15 @@ class ProductSave implements ObserverInterface
 		                   "sub_days_between"=>"",
 		                   "sub_lifetime"=>"",
 		                   "hide_from_pos"=>"0",
-		                   "hide_from_web"=>"0",
+		                   "hide_from_web"=>"1",
 		                   "images"=>$images
 		        );
 		    
 				// Insert & update product in hiecor
    				$this->logger->critical('ProductSave request '.$magentoPId, ['requestData' => $product_details]);
 	        	
-	        	if(!empty($attrCodeValue)){
-					$product_details['product_id'] = $attrCodeValue;
+	        	if(!empty($hiecorProductId)){
+					$product_details['product_id'] = $hiecorProductId;
 					$endPoint='rest/v1/product/update-product/';
 					$response = $this->helper->postApiCall($product_details,$endPoint);
 					$this->logger->critical('ProductSave response postApiCall '.$magentoPId, ['responseData' => $product_details]);
@@ -108,21 +108,26 @@ class ProductSave implements ObserverInterface
 					}
 				}else{
 		        	// Check in Product lookup by product code product exist or not in hiecor
-		        	$urlSKU = str_replace(' ', '%20', $sku);
-	        		$endPoint='rest/v1/product/search/?product_code='.$urlSKU;
+		        	// $urlSKU = str_replace(' ', '%20', $sku);
+		        	//$urlSKU = urlencode($sku);
+	        		$endPoint = 'rest/v1/product/search/?product_code='.$sku;
+	        		$endPoint = urlencode($endPoint);
+
 					$hiecorProduct = $this->helper->getApiCall($endPoint);
 					$this->logger->critical('ProductSave response getApiCall '.$magentoPId, ['responseData' => $hiecorProduct]);
 
 					if( !empty($hiecorProduct['success']) && !empty($hiecorProduct['data']) ){
 						$hiecorPId = $hiecorProduct['data'][0]['product_id'];
-						$message = __('This product cannot be synced to Hiecor.More then one product have same SKU : '.$sku); 
+						$errorMsg = "This product cannot be synced to Hiecor.More then one product have same SKU : $sku";
+						$message = __($errorMsg); 
 						$this->messageManager->addErrorMessage($message);
-						$this->logger->critical('Error ProductSave', ['message' => 'This product cannot be synced to Hiecor.More then one product have same SKU : '.$sku]);
+						$this->logger->critical('Error ProductSave', ['message' => $errorMsg]);
 
-					}elseif( empty($hiecorProduct['success']) && is_null($hiecorProduct['data']) && !empty($hiecorProduct['error']) ) {
-						$message = __('Invalid Credentials in Hiecor Payment Method. '.$hiecorProduct['error']); 
+					}elseif( $hiecorProduct['success'] == false && is_null($hiecorProduct['data']) && !empty($hiecorProduct['error']) ) {
+						$errorMsg = "Invalid Credentials in Hiecor Payment Method. ".$hiecorProduct['error'];
+						$message = __($errorMsg); 
 						$this->messageManager->addErrorMessage($message);
-						$this->logger->critical('Error ProductSave', ['message' => 'Invalid Credentials in Hiecor Payment Method. '.$hiecorProduct['error']]);
+						$this->logger->critical('Error ProductSave', ['message' => $errorMsg]);
 					
 					}else{
 			            $endPoint='rest/v1/product/create-product/';
